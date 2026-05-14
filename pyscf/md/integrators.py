@@ -19,7 +19,7 @@
 import os
 import numpy as np
 
-from pyscf import data
+from pyscf import data, md
 from pyscf import lib
 from pyscf.lib import logger
 from pyscf.grad.rhf import GradientsBase
@@ -641,17 +641,23 @@ class LangevinMiddle(_Integrator):
         self.alpha = np.exp(-friction_coef * self.dt)
         self.mid_veloc = np.full((self.mol.natm, 3), 0.0)
 
-    def _generate_R_noise(self):
+    def _generate_R_noise(self, rng=md.rng):
         '''Generate random noise for the Langevin Middle Thermostat.
 
         The noise is generated from a normal distribution with mean 0 and 2 * gamma * k_B * T variance,
         where gamma is the friction coefficient, k_B is the Boltzmann constant, and T is the temperature of the heat bath.
-        
-        Returns an (n, 3) array of random noise for each atom in the system.
+
+        Args:
+            rng : np.random.Generator
+                Random number generator to sample from. Must contain a method
+                `normal`. Default is to use the md.rng which is a
+                np.random.Generator
+
+        Returns:
+            (n, 3) array of random noise for each atom in the system.
         '''
 
-        # TODO: Replace with np.random.default_rng(seed); maybe take seed in as input?
-        return np.random.normal(
+        return rng.random.normal(
             0,
             2.0 * self.friction_coef * data.nist.BOLTZMANN * self.T,
             size=(self.mol.natm, 3),
