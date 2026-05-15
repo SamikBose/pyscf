@@ -656,7 +656,7 @@ class Langevin(_Integrator):
             (n, 3) array of random noise for each atom in the system.
         '''
 
-        return rng.random.normal(
+        return rng.normal(
             0,
             2.0 * self.friction_coef * data.nist.BOLTZMANN * self.T,
             size=(self.mol.natm, 3),
@@ -781,7 +781,7 @@ class LangevinMiddle(_Integrator):
             (n, 3) array of random noise for each atom in the system.
         '''
 
-        return rng.random.normal(
+        return rng.normal(
             0,
             2.0 * self.friction_coef * data.nist.BOLTZMANN * self.T,
             size=(self.mol.natm, 3),
